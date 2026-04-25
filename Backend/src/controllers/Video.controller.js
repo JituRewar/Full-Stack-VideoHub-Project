@@ -84,11 +84,14 @@ const getAllVideos = asyncHandler(async (req, res) => {
       $project: {
         title: 1,
         thumbnail: 1,
+        duration: 1,
         views: 1,
         createdAt: 1,
         likesCount: 1,
         "owner._id": 1,
         "owner.username": 1,
+        "owner.avatar": 1,
+        "owner.fullName": 1,
       },
     },
 
@@ -190,6 +193,21 @@ const getVideoById = asyncHandler(async (req, res) => {
     },
     { $unwind: "$owner" },
 
+    // Subscribers Count
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "owner._id",
+        foreignField: "channel",
+        as: "subscribers",
+      },
+    },
+    {
+      $addFields: {
+        "owner.subscribersCount": { $size: "$subscribers" },
+      },
+    },
+
     //  Likes
     {
       $lookup: {
@@ -235,6 +253,8 @@ const getVideoById = asyncHandler(async (req, res) => {
         "owner._id": 1,
         "owner.username": 1,
         "owner.avatar": 1,
+        "owner.fullName": 1,
+        "owner.subscribersCount": 1,
       },
     },
   ]);
@@ -365,7 +385,8 @@ const getVideosByUser = asyncHandler(async (req, res) => {
 
   const videos = await Video.find({ owner: userId })
     .sort({ createdAt: -1 })
-    .select("title thumbnail views createdAt");
+    .populate("owner", "avatar fullName username")
+    .select("title thumbnail duration views createdAt owner");
 
   return res.status(200).json(
     new ApiResponse(200, videos, "User videos fetched successfully")

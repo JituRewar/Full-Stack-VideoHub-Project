@@ -36,7 +36,7 @@ app.use("/api/v1/tweets",tweetRouter)
 app.use("/api/v1/playlist", playlistRouter);
 app.use("/api/v1/dashboard",dashboardRouter)
 app.use("/api/v1/subscriptions",subscriptionRouter)
-app.use("/api/v1/aiRouter",aiRouter)
+app.use("/api/v1/ai",aiRouter)
 
 
 

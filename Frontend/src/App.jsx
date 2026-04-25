@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
 
 import Navbar from "./components/Navbar";
-import SideBar1 from "./components/SideBar1";
+import Sidebar from "./components/Sidebar";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import Home from "./pages/Home";
@@ -17,16 +17,22 @@ import Subscriptions from "./pages/Subscriptions";
 import Playlist from "./pages/Playlist";
 import AIAssistant from "./pages/AIAssistant";
 import Community from "./pages/Community"; 
+import Search from "./pages/Search";
+import Trending from "./pages/Trending";
+import Settings from "./pages/Settings";
+import Help from "./pages/Help";
 
 function Layout({ children }) {
   return (
-    <>
+    <div className="min-h-screen bg-gray-50 flex flex-col font-sans text-gray-900">
       <Navbar />
-      <div className="pt-16">
-        <SideBar1 />
-        <div className="ml-60 p-6">{children}</div>
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar className="hidden md:block w-64 shrink-0" />
+        <main className="flex-1 overflow-y-auto">
+          {children}
+        </main>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -148,13 +154,51 @@ function App() {
           }
         />
 
-        <Route
+          <Route
           path="/community"
           element={
             <Layout>
               <ProtectedRoute>
                 <Community />
               </ProtectedRoute>
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/search"
+          element={
+            <Layout>
+              <Search />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/trending"
+          element={
+            <Layout>
+              <Trending />
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <Layout>
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/help"
+          element={
+            <Layout>
+              <Help />
             </Layout>
           }
         />

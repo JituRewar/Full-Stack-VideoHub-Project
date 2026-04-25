@@ -14,7 +14,7 @@ const askAI = asyncHandler(async (req, res) => {
     // 1. Initialize Gemini
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-flash",
+        model: "gemini-2.5-flash",
         systemInstruction: "You are CineMind AI, a professional assistant for filmmakers and content creators. Be helpful, concise, and creative."
     });
 
@@ -35,12 +35,18 @@ const askAI = asyncHandler(async (req, res) => {
     }
 
     // 3. Generate Content from Gemini
-    const chatSession = model.startChat({ history });
-    const result = await chatSession.sendMessage(prompt);
-    const aiResponse = result.response.text();
+    let result, aiResponse;
+    try {
+        const chatSession = model.startChat({ history });
+        result = await chatSession.sendMessage(prompt);
+        aiResponse = result.response.text();
+    } catch (apiError) {
+        console.error("Gemini API Error Detail: ", apiError);
+        throw new ApiError(500, "Failed to connect to AI Provider: " + apiError.message);
+    }
 
     if (!aiResponse) {
-        throw new ApiError(500, "Failed to generate AI response");
+        throw new ApiError(500, "Failed to generate AI response from Gemini");
     }
 
     // 4. Save to Database
